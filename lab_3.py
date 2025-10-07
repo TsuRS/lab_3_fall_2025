@@ -157,9 +157,9 @@ class InverseKinematics(Node):
             return grad
 
         theta = np.array(initial_guess)
-        learning_rate = 1  # DONE: Set the learning rate
+        learning_rate = 0.5  # DONE: Set the learning rate
         max_iterations = 50  # DONE: Set the maximum number of iterations
-        tolerance = 1e-3  # DONE: Set the tolerance for the L1 norm of the error
+        tolerance = 1e-4  # DONE: Set the tolerance for the L1 norm of the error
 
         start_lr = 5.0
         end_lr = 0.1
@@ -218,8 +218,8 @@ class InverseKinematics(Node):
                 target_ee, self.joint_positions)
             current_ee = self.forward_kinematics(*self.joint_positions)
 
-            self.get_logger().info(
-                f'Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
+            # self.get_logger().info(
+            #     f'Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
 
     def pd_timer_callback(self):
         if self.target_joint_positions is not None:
