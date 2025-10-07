@@ -170,6 +170,12 @@ class InverseKinematics(Node):
             # to determine if IK has converged
             # TODO (BONUS): Implement the (quasi-)Newton's method instead of finite differences for faster convergence
             ################################################################################################
+            cost = cost_function(theta)
+            cost_l.append(cost)
+            if cost <= tolerance:
+                break
+            else:
+                theta -= lr * grad     
 
         # print(f'Cost: {cost_l}') # Use to debug to see if you cost function converges within max_iterations
 
