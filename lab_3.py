@@ -216,8 +216,8 @@ class InverseKinematics(Node):
             end = time.time()
             self.t += (end - start)
 
-            # self.get_logger().info(
-                # f'Time: {self.t}, Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
+            self.get_logger().info(
+                f'Time: {self.t}, Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
 
     def pd_timer_callback(self):
         if self.target_joint_positions is not None:
