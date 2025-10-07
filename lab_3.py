@@ -155,9 +155,9 @@ class InverseKinematics(Node):
             return numerical_gradient
 
         theta = np.array(initial_guess)
-        learning_rate = 5  # TODO: Set the learning rate
-        max_iterations = None  # TODO: Set the maximum number of iterations
-        tolerance = None  # TODO: Set the tolerance for the L1 norm of the error
+        learning_rate = 0.1  # DONE: Set the learning rate
+        max_iterations = 50  # DONE: Set the maximum number of iterations
+        tolerance = 1e-4  # DONE: Set the tolerance for the L1 norm of the error
 
         cost_l = []
         for iteration in range(max_iterations):
@@ -174,7 +174,7 @@ class InverseKinematics(Node):
             if cost <= tolerance:
                 break
             else:
-                theta -= lr * grad
+                theta -= learning_rate * grad
 
         # print(f'Cost: {cost_l}') # Use to debug to see if you cost function converges within max_iterations
 
