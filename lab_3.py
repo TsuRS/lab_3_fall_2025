@@ -161,8 +161,13 @@ class InverseKinematics(Node):
         max_iterations = 50  # DONE: Set the maximum number of iterations
         tolerance = 1e-3  # DONE: Set the tolerance for the L1 norm of the error
 
+        start_lr = 5.0
+        end_lr = 0.1
+
         cost_l = []
-        for _ in range(max_iterations):
+        for i in range(max_iterations):
+            learning_rate = start_lr - \
+                (start_lr - end_lr) * (i / max_iterations)
             grad = gradient(theta)
 
             # Update the theta (parameters) using the gradient and the learning rate
@@ -212,7 +217,6 @@ class InverseKinematics(Node):
             self.target_joint_positions = self.inverse_kinematics(
                 target_ee, self.joint_positions)
             current_ee = self.forward_kinematics(*self.joint_positions)
-
 
             self.get_logger().info(
                 f'Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
