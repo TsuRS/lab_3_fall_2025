@@ -146,21 +146,23 @@ class InverseKinematics(Node):
             return squared_l2_norm
 
         def gradient(theta, epsilon=1e-3):
-            # Compute the gradient of the cost function using finite differences
-            ################################################################################################
-            # TODO: Implement the gradient computation
-            ################################################################################################
-            numerical_gradient = (cost_function(
-                theta + epsilon) - cost_function(theta - epsilon)) / (2 * epsilon)
-            return numerical_gradient
+            # numerical gradient (central difference) per component
+            theta = np.asarray(theta, dtype=float)
+            grad = np.zeros_like(theta, dtype=float)
+            for i in range(len(theta)):
+                e = np.zeros_like(theta, dtype=float)
+                e[i] = epsilon
+                grad[i] = (cost_function(theta + e) -
+                           cost_function(theta - e)) / (2.0 * epsilon)
+            return grad
 
         theta = np.array(initial_guess)
-        learning_rate = 0.1  # DONE: Set the learning rate
+        learning_rate = 1  # DONE: Set the learning rate
         max_iterations = 50  # DONE: Set the maximum number of iterations
-        tolerance = 1e-4  # DONE: Set the tolerance for the L1 norm of the error
+        tolerance = 1e-3  # DONE: Set the tolerance for the L1 norm of the error
 
         cost_l = []
-        for iteration in range(max_iterations):
+        for _ in range(max_iterations):
             grad = gradient(theta)
 
             # Update the theta (parameters) using the gradient and the learning rate
@@ -184,7 +186,7 @@ class InverseKinematics(Node):
         # Intepolate between the three triangle positions in the self.ee_triangle_positions
         # based on the current time t
         ################################################################################################
-        # TODO: Implement the interpolation function
+        # DONE: Implement the interpolation function
         ################################################################################################
         t = t % 3
         if t < 1.0:
