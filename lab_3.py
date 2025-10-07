@@ -143,7 +143,7 @@ def forward_kinematics(self, theta1, theta2, theta3):
             squared_l2_norm = 0.0
             for elem in difference_vector:
                 squared_l2_norm += elem * elem
-            return squared_l2_norm, difference_vector
+            return squared_l2_norm
 
         def gradient(theta, epsilon=1e-3):
             # Compute the gradient of the cost function using finite differences
