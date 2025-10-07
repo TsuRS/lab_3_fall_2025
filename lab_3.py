@@ -8,6 +8,7 @@ np.set_printoptions(precision=3, suppress=True)
 Kp = 3
 Kd = 0.1
 
+
 class InverseKinematics(Node):
 
     def __init__(self):
@@ -27,8 +28,10 @@ class InverseKinematics(Node):
 
         self.pd_timer_period = 1.0 / 200  # 200 Hz
         self.ik_timer_period = 1.0 / 20   # 10 Hz
-        self.pd_timer = self.create_timer(self.pd_timer_period, self.pd_timer_callback)
-        self.ik_timer = self.create_timer(self.ik_timer_period, self.ik_timer_callback)
+        self.pd_timer = self.create_timer(
+            self.pd_timer_period, self.pd_timer_callback)
+        self.ik_timer = self.create_timer(
+            self.ik_timer_period, self.ik_timer_callback)
 
         self.joint_positions = None
         self.joint_velocities = None
@@ -36,7 +39,7 @@ class InverseKinematics(Node):
 
         self.ee_triangle_positions = np.array([
             [0.05, 0.0, -0.12],  # Touchdown
-            [-0.05, 0.0, -0.12], # Liftoff
+            [-0.05, 0.0, -0.12],  # Liftoff
             [0.0, 0.0, -0.06]    # Mid-swing
         ])
 
@@ -46,15 +49,19 @@ class InverseKinematics(Node):
         self.t = 0
 
     def listener_callback(self, msg):
-        joints_of_interest = ['leg_front_r_1', 'leg_front_r_2', 'leg_front_r_3']
-        self.joint_positions = np.array([msg.position[msg.name.index(joint)] for joint in joints_of_interest])
-        self.joint_velocities = np.array([msg.velocity[msg.name.index(joint)] for joint in joints_of_interest])
+        joints_of_interest = ['leg_front_r_1',
+            'leg_front_r_2', 'leg_front_r_3']
+        self.joint_positions = np.array(
+            [msg.position[msg.name.index(joint)] for joint in joints_of_interest])
+        self.joint_velocities = np.array(
+            [msg.velocity[msg.name.index(joint)] for joint in joints_of_interest])
+
 
 def forward_kinematics(self, theta1, theta2, theta3):
         ################################################################################################
         # TODO: Compute the forward kinematics for the front right leg (should be easy after lab 2!)
         ################################################################################################
-        
+
         def rotation_x(angle):
             # rotation about the x-axis implemented for you
             return np.array(
@@ -67,7 +74,7 @@ def forward_kinematics(self, theta1, theta2, theta3):
             )
 
         def rotation_y(angle):
-            ## TODO: Implement the rotation matrix about the y-axis
+            # TODO: Implement the rotation matrix about the y-axis
             return np.array(
                 [
                     [np.cos(angle), 0, np.sin(angle), 0],
@@ -98,15 +105,18 @@ def forward_kinematics(self, theta1, theta2, theta3):
             )
 
         # T_0_1 (base_link to leg_front_l_1)
-        T_0_1 = translation(0.07500, -0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
+        T_0_1 = translation(
+            0.07500, -0.0445, 0) @ rotation_x(1.57080) @ rotation_z(theta1)
 
         # T_1_2 (leg_front_l_1 to leg_front_l_2)
-        ## TODO: Implement the transformation matrix from leg_front_l_1 to leg_front_l_2
-        T_1_2 = translation(0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
+        # TODO: Implement the transformation matrix from leg_front_l_1 to leg_front_l_2
+        T_1_2 = translation(
+            0, 0, 0.039) @ rotation_y(-1.57080) @ rotation_z(theta2)
 
         # T_2_3 (leg_front_l_2 to leg_front_l_3)
-        ## TODO: Implement the transformation matrix from leg_front_l_2 to leg_front_l_3
-        T_2_3 = translation(0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
+        # TODO: Implement the transformation matrix from leg_front_l_2 to leg_front_l_3
+        T_2_3 = translation(
+            0, -0.0494, 0.0685) @ rotation_y(1.57080) @ rotation_z(theta3)
 
         # T_3_ee (leg_front_l_3 to end-effector)
         T_3_ee = translation(0.06231, -0.06216, 0.018)
@@ -172,11 +182,11 @@ def forward_kinematics(self, theta1, theta2, theta3):
         ################################################################################################
         t = t % 3
         if t < 1:
-                return np.interpolate(self.ee_triangle_positions[0], self.ee_triangle_positions[1], t)
+                return np.interp(self.ee_triangle_positions[0], self.ee_triangle_positions[1], t)
         elif t < 2:
-                return np.interpolate(self.ee_triangle_positions[1], self.ee_triangle_positions[2], t - 1)
+                return np.interp(self.ee_triangle_positions[1], self.ee_triangle_positions[2], t - 1)
         else:
-                return np.interpolate(self.ee_triangle_positions[2], self.ee_triangle_positions[0], t - 2)
+                return np.interp(self.ee_triangle_positions[2], self.ee_triangle_positions[0], t - 2)
 
     def ik_timer_callback(self):
         if self.joint_positions is not None:
