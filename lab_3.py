@@ -1,4 +1,5 @@
 import rclpy
+import time
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
@@ -50,14 +51,13 @@ class InverseKinematics(Node):
 
     def listener_callback(self, msg):
         joints_of_interest = ['leg_front_r_1',
-            'leg_front_r_2', 'leg_front_r_3']
+                              'leg_front_r_2', 'leg_front_r_3']
         self.joint_positions = np.array(
             [msg.position[msg.name.index(joint)] for joint in joints_of_interest])
         self.joint_velocities = np.array(
             [msg.velocity[msg.name.index(joint)] for joint in joints_of_interest])
 
-
-def forward_kinematics(self, theta1, theta2, theta3):
+    def forward_kinematics(self, theta1, theta2, theta3):
         ################################################################################################
         # TODO: Compute the forward kinematics for the front right leg (should be easy after lab 2!)
         ################################################################################################
@@ -138,7 +138,8 @@ def forward_kinematics(self, theta1, theta2, theta3):
             # TODO: Implement the cost function
             # HINT: You can use the * notation on a list to "unpack" a list
             ################################################################################################
-            ee_position = forward_kinematics(self, self.theta1, self.theta2, self.theta3)
+            ee_position = forward_kinematics(
+                self, self.theta1, self.theta2, self.theta3)
             difference_vector = ee_position - target_ee
             squared_l2_norm = 0.0
             for elem in difference_vector:
@@ -150,14 +151,14 @@ def forward_kinematics(self, theta1, theta2, theta3):
             ################################################################################################
             # TODO: Implement the gradient computation
             ################################################################################################
-            numerical_gradient = (cost_function(theta + epsilon) - cost_function(theta - epsilon)) / (2 * epsilon)
+            numerical_gradient = (cost_function(
+                theta + epsilon) - cost_function(theta - epsilon)) / (2 * epsilon)
             return numerical_gradient
-            
 
         theta = np.array(initial_guess)
-        learning_rate = 5 # TODO: Set the learning rate
-        max_iterations = None # TODO: Set the maximum number of iterations
-        tolerance = None # TODO: Set the tolerance for the L1 norm of the error
+        learning_rate = 5  # TODO: Set the learning rate
+        max_iterations = None  # TODO: Set the maximum number of iterations
+        tolerance = None  # TODO: Set the tolerance for the L1 norm of the error
 
         cost_l = []
         for iteration in range(max_iterations):
@@ -169,10 +170,9 @@ def forward_kinematics(self, theta1, theta2, theta3):
             # to determine if IK has converged
             # TODO (BONUS): Implement the (quasi-)Newton's method instead of finite differences for faster convergence
             ################################################################################################
-            
 
         # print(f'Cost: {cost_l}') # Use to debug to see if you cost function converges within max_iterations
-        
+
         return theta
 
     def interpolate_triangle(self, t):
@@ -183,24 +183,26 @@ def forward_kinematics(self, theta1, theta2, theta3):
         ################################################################################################
         t = t % 3
         if t < 1:
-                return np.interp(self.ee_triangle_positions[0], self.ee_triangle_positions[1], t)
+            return np.interp(self.ee_triangle_positions[0], self.ee_triangle_positions[1], t)
         elif t < 2:
-                return np.interp(self.ee_triangle_positions[1], self.ee_triangle_positions[2], t - 1)
+            return np.interp(self.ee_triangle_positions[1], self.ee_triangle_positions[2], t - 1)
         else:
-                return np.interp(self.ee_triangle_positions[2], self.ee_triangle_positions[0], t - 2)
+            return np.interp(self.ee_triangle_positions[2], self.ee_triangle_positions[0], t - 2)
 
     def ik_timer_callback(self):
         if self.joint_positions is not None:
             start = time.time()
 
             target_ee = self.interpolate_triangle(self.t)
-            self.target_joint_positions = self.inverse_kinematics(target_ee, self.joint_positions)
+            self.target_joint_positions = self.inverse_kinematics(
+                target_ee, self.joint_positions)
             current_ee = self.forward_kinematics(*self.joint_positions)
 
             end = time.time()
             self.t += (end - start)
-            
-            self.get_logger().info(f'Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
+
+            self.get_logger().info(
+                f'Target EE: {target_ee}, Current EE: {current_ee}, Target Angles: {self.target_joint_positions}, Target Angles to EE: {self.forward_kinematics(*self.target_joint_positions)}, Current Angles: {self.joint_positions}')
 
     def pd_timer_callback(self):
         if self.target_joint_positions is not None:
@@ -209,10 +211,11 @@ def forward_kinematics(self, theta1, theta2, theta3):
             command_msg.data = self.target_joint_positions.tolist()
             self.command_publisher.publish(command_msg)
 
+
 def main():
     rclpy.init()
     inverse_kinematics = InverseKinematics()
-    
+
     try:
         rclpy.spin(inverse_kinematics)
     except KeyboardInterrupt:
@@ -222,9 +225,10 @@ def main():
         zero_torques = Float64MultiArray()
         zero_torques.data = [0.0, 0.0, 0.0]
         inverse_kinematics.command_publisher.publish(zero_torques)
-        
+
         inverse_kinematics.destroy_node()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
