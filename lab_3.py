@@ -135,11 +135,10 @@ class InverseKinematics(Node):
             # Compute the cost function and the squared L2 norm of the error
             # return the cost and the squared L2 norm of the error
             ################################################################################################
-            # TODO: Implement the cost function
+            # DONE: Implement the cost function
             # HINT: You can use the * notation on a list to "unpack" a list
             ################################################################################################
-            ee_position = forward_kinematics(
-                self, self.theta1, self.theta2, self.theta3)
+            ee_position = self.forward_kinematics(*theta)
             difference_vector = ee_position - target_ee
             squared_l2_norm = 0.0
             for elem in difference_vector:
@@ -175,7 +174,7 @@ class InverseKinematics(Node):
             if cost <= tolerance:
                 break
             else:
-                theta -= lr * grad     
+                theta -= lr * grad
 
         # print(f'Cost: {cost_l}') # Use to debug to see if you cost function converges within max_iterations
 
