@@ -151,6 +151,7 @@ def forward_kinematics(self, theta1, theta2, theta3):
             # TODO: Implement the gradient computation
             ################################################################################################
             numerical_gradient = (cost_function(theta + epsilon) - cost_function(theta - epsilon)) / (2 * epsilon)
+            return numerical_gradient
             
 
         theta = np.array(initial_guess)
