@@ -161,7 +161,7 @@ class InverseKinematics(Node):
         max_iterations = 50  # DONE: Set the maximum number of iterations
         tolerance = 1e-4  # DONE: Set the tolerance for the L1 norm of the error
 
-        start_lr = 5.0
+        start_lr = 10.0
         end_lr = 0.1
 
         cost_l = []
@@ -214,8 +214,7 @@ class InverseKinematics(Node):
             self.t = time.time()
 
             target_ee = self.interpolate_triangle(self.t)
-            self.target_joint_positions = self.inverse_kinematics(
-                self.joint_positions, target_ee)
+            self.target_joint_positions = self.inverse_kinematics(target_ee, self.joint_positions)
             current_ee = self.forward_kinematics(*self.joint_positions)
 
             self.get_logger().info(
