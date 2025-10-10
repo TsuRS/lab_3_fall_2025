@@ -215,7 +215,7 @@ class InverseKinematics(Node):
 
             target_ee = self.interpolate_triangle(self.t)
             self.target_joint_positions = self.inverse_kinematics(
-                target_ee, self.joint_positions)
+                self.joint_positions, target_ee)
             current_ee = self.forward_kinematics(*self.joint_positions)
 
             self.get_logger().info(
